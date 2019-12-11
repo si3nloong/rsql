@@ -66,10 +66,12 @@ class Expression implements IStringer {
 const mapExpr = (optr: operator) => (field: string, value: any) =>
   new Expression(field, optr, value);
 
-const groupBy = (seperator: string) => (...args: any[]) => {
+const groupBy = (seperator: string) => (
+  ...args: Array<Expression | CustomArray>
+) => {
   const length = args.length - 1;
   const result = args.reduce(
-    (acc: CustomArray, cur: any, i: number) => {
+    (acc: CustomArray, cur: Expression | CustomArray, i: number) => {
       if (cur instanceof Expression) {
         acc.push(cur);
       } else {
@@ -110,7 +112,7 @@ class Query {
     return this;
   };
 
-  public filter = (...args: CustomArray) => {
+  public filter = (...args: Array<Expression | CustomArray>) => {
     this.conditions = and(...args);
     return this;
   };
@@ -162,7 +164,8 @@ class Query {
 }
 
 const select = (...args: Array<string>) => new Query().select(...args);
-const filter = (...args: CustomArray) => new Query().filter(...args);
+const filter = (...args: Array<Expression | CustomArray>) =>
+  new Query().filter(...args);
 const sort = (...args: Array<string>) => new Query().sort(...args);
 const limit = (num: number) => new Query().limit(num);
 
