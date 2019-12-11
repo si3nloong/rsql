@@ -2,12 +2,13 @@ import { filter, ne, or, eq, includes, notIncludes } from '../src';
 
 test('Query String', () => {
   const qs = filter(
-    eq('name', 'test'),
+    eq('name', 1),
+    ne('flag', true),
     includes('status', ['A', 'B', 'C']),
     notIncludes('status', ['A', 'B', 'C']),
   ).qs();
   expect(qs).toBe(
-    `$filter=(name==test;status=in=A,B,C;status=nin=A,B,C)&$limit=100`,
+    `$filter=(name==1;flag!=true;status=in=A,B,C;status=nin=A,B,C)&$limit=100`,
   );
 
   expect(filter(ne('b', 'value'), or(eq('c', 'v2'), eq('d', 'v4'))).qs()).toBe(

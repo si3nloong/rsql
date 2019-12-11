@@ -1,28 +1,29 @@
-enum operator {
-  equal,
-  notEqual,
-  greaterThan,
-  greaterEqual,
-  lesserThan,
-  lesserEqual,
-  like,
-  notLike,
-  in,
-  notIn,
+enum Operator {
+  Equal,
+  NotEqual,
+  GreaterThan,
+  GreaterEqual,
+  LesserThan,
+  LesserEqual,
+  Like,
+  NotLike,
+  In,
+  NotIn,
 }
 
 interface IStringer {
   string(): string;
 }
 
+type BaseValue = string | boolean | number;
 type CustomArray = Array<string | IStringer>;
 
 class Expression implements IStringer {
   private field: string;
-  private operator: operator;
+  private operator: Operator;
   private value: any;
 
-  constructor(field: string, op: operator, value: any) {
+  constructor(field: string, op: Operator, value: any) {
     this.field = field;
     this.operator = op;
     this.value = value;
@@ -31,39 +32,39 @@ class Expression implements IStringer {
   public string = () => {
     let str = this.field;
     switch (this.operator) {
-      case operator.equal:
+      case Operator.Equal:
         str += '==';
         break;
-      case operator.notEqual:
+      case Operator.NotEqual:
         str += '!=';
         break;
-      case operator.lesserThan:
+      case Operator.LesserThan:
         str += '<';
         break;
-      case operator.lesserEqual:
+      case Operator.LesserEqual:
         str += '<=';
         break;
-      case operator.greaterThan:
+      case Operator.GreaterThan:
         str += '>';
         break;
-      case operator.greaterEqual:
+      case Operator.GreaterEqual:
         str += '>=';
         break;
-      case operator.in:
+      case Operator.In:
         str += '=in=';
         break;
-      case operator.notIn:
+      case Operator.NotIn:
         str += '=nin=';
         break;
       default:
-        throw new Error('unsupported operator');
+        throw new Error('unsupported Operator');
     }
     str += this.value;
     return str;
   };
 }
 
-const mapExpr = (optr: operator) => (field: string, value: any) =>
+const mapExpr = <T>(optr: Operator) => (field: string, value: T) =>
   new Expression(field, optr, value);
 
 const groupBy = (seperator: string) => (
@@ -90,16 +91,16 @@ const groupBy = (seperator: string) => (
 
 const or = groupBy(',');
 const and = groupBy(';');
-const eq = mapExpr(operator.equal);
-const ne = mapExpr(operator.notEqual);
-const gt = mapExpr(operator.greaterThan);
-const gte = mapExpr(operator.greaterEqual);
-const lt = mapExpr(operator.lesserThan);
-const lte = mapExpr(operator.lesserEqual);
-const like = mapExpr(operator.like);
-const notLike = mapExpr(operator.notLike);
-const includes = mapExpr(operator.in);
-const notIncludes = mapExpr(operator.notIn);
+const eq = mapExpr<BaseValue>(Operator.Equal);
+const ne = mapExpr<BaseValue>(Operator.NotEqual);
+const gt = mapExpr<BaseValue>(Operator.GreaterThan);
+const gte = mapExpr<BaseValue>(Operator.GreaterEqual);
+const lt = mapExpr<BaseValue>(Operator.LesserThan);
+const lte = mapExpr<BaseValue>(Operator.LesserEqual);
+const like = mapExpr<BaseValue>(Operator.Like);
+const notLike = mapExpr<BaseValue>(Operator.NotLike);
+const includes = mapExpr<Array<BaseValue>>(Operator.In);
+const notIncludes = mapExpr<Array<BaseValue>>(Operator.NotIn);
 
 class Query {
   private projections: Array<string> = [];
@@ -129,6 +130,7 @@ class Query {
 
   public qs = () => {
     let querystr = '';
+
     if (this.projections.length > 0) {
       querystr += querystr != '' ? '&' : '';
       querystr += `$select=${this.projections.join(',')}`;
