@@ -1,78 +1,16 @@
-enum Operator {
-  Equal,
-  NotEqual,
-  GreaterThan,
-  GreaterEqual,
-  LesserThan,
-  LesserEqual,
-  Like,
-  NotLike,
-  In,
-  NotIn,
-}
-
-interface IStringer {
-  string(): string;
-}
-
-type BaseValue = string | boolean | number;
-type CustomArray = Array<string | IStringer>;
-
-class Expression implements IStringer {
-  private field: string;
-  private operator: Operator;
-  private value: any;
-
-  constructor(field: string, op: Operator, value: any) {
-    this.field = field;
-    this.operator = op;
-    this.value = value;
-  }
-
-  public string = () => {
-    let str = this.field;
-    switch (this.operator) {
-      case Operator.Equal:
-        str += '==';
-        break;
-      case Operator.NotEqual:
-        str += '!=';
-        break;
-      case Operator.LesserThan:
-        str += '<';
-        break;
-      case Operator.LesserEqual:
-        str += '<=';
-        break;
-      case Operator.GreaterThan:
-        str += '>';
-        break;
-      case Operator.GreaterEqual:
-        str += '>=';
-        break;
-      case Operator.In:
-        str += '=in=';
-        break;
-      case Operator.NotIn:
-        str += '=nin=';
-        break;
-      default:
-        throw new Error('unsupported Operator');
-    }
-    str += this.value;
-    return str;
-  };
-}
+import { Expression } from './expression';
+import Query from './query';
+import { IArray, IBase, Operator } from './types';
 
 const mapExpr = <T>(optr: Operator) => (field: string, value: T) =>
   new Expression(field, optr, value);
 
 const groupBy = (seperator: string) => (
-  ...args: Array<Expression | CustomArray>
+  ...args: Array<Expression | IArray>
 ) => {
   const length = args.length - 1;
   const result = args.reduce(
-    (acc: CustomArray, cur: Expression | CustomArray, i: number) => {
+    (acc: IArray, cur: Expression | IArray, i: number) => {
       if (cur instanceof Expression) {
         acc.push(cur);
       } else {
@@ -91,84 +29,21 @@ const groupBy = (seperator: string) => (
 
 const or = groupBy(',');
 const and = groupBy(';');
-const eq = mapExpr<BaseValue>(Operator.Equal);
-const ne = mapExpr<BaseValue>(Operator.NotEqual);
-const gt = mapExpr<BaseValue>(Operator.GreaterThan);
-const gte = mapExpr<BaseValue>(Operator.GreaterEqual);
-const lt = mapExpr<BaseValue>(Operator.LesserThan);
-const lte = mapExpr<BaseValue>(Operator.LesserEqual);
-const like = mapExpr<BaseValue>(Operator.Like);
-const notLike = mapExpr<BaseValue>(Operator.NotLike);
-const includes = mapExpr<Array<BaseValue>>(Operator.In);
-const notIncludes = mapExpr<Array<BaseValue>>(Operator.NotIn);
+const eq = mapExpr<IBase>(Operator.Equal);
+const ne = mapExpr<IBase>(Operator.NotEqual);
+const gt = mapExpr<IBase>(Operator.GreaterThan);
+const gte = mapExpr<IBase>(Operator.GreaterEqual);
+const lt = mapExpr<IBase>(Operator.LesserThan);
+const lte = mapExpr<IBase>(Operator.LesserEqual);
+const like = mapExpr<IBase>(Operator.Like);
+const notLike = mapExpr<IBase>(Operator.NotLike);
+const includes = mapExpr<IBase[]>(Operator.In);
+const notIncludes = mapExpr<IBase[]>(Operator.NotIn);
 
-class Query {
-  private projections: Array<string> = [];
-  private conditions: CustomArray = [];
-  private sorts: Array<string> = [];
-  private max: number = 100;
-
-  public select = (...args: Array<string>) => {
-    this.projections = args;
-    return this;
-  };
-
-  public filter = (...args: Array<Expression | CustomArray>) => {
-    this.conditions = and(...args);
-    return this;
-  };
-
-  public sort = (...args: Array<string>) => {
-    this.sorts = args;
-    return this;
-  };
-
-  public limit = (num: number) => {
-    this.max = num;
-    return this;
-  };
-
-  public qs = () => {
-    let querystr = '';
-
-    if (this.projections.length > 0) {
-      querystr += querystr != '' ? '&' : '';
-      querystr += `$select=${this.projections.join(',')}`;
-    }
-
-    if (this.conditions.length > 0) {
-      querystr += querystr != '' ? '&' : '';
-      querystr += `$filter=${this.conditions.reduce(
-        (acc: string, cur: IStringer | string) => {
-          if (typeof cur === 'string') {
-            acc += cur;
-          } else {
-            acc += cur.string();
-          }
-          return acc;
-        },
-        '',
-      )}`;
-    }
-
-    if (this.sort.length > 0) {
-      querystr += querystr != '' ? '&' : '';
-      querystr += `$sort=${this.sorts.join(',')}`;
-    }
-
-    if (this.max > 0) {
-      querystr += querystr != '' ? '&' : '';
-      querystr += `$limit=${this.max.toFixed(0)}`;
-    }
-
-    return querystr;
-  };
-}
-
-const select = (...args: Array<string>) => new Query().select(...args);
-const filter = (...args: Array<Expression | CustomArray>) =>
+const select = (...args: string[]) => new Query().select(...args);
+const filter = (...args: Array<Expression | IArray>) =>
   new Query().filter(...args);
-const sort = (...args: Array<string>) => new Query().sort(...args);
+const sort = (...args: string[]) => new Query().sort(...args);
 const limit = (num: number) => new Query().limit(num);
 
 export {
