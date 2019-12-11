@@ -1,0 +1,13 @@
+name: NodeCI
+on: [push]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - name: Build
+        run: |
+          npm install
+          npm test
