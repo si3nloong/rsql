@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/si3nloong/rsql/workflows/build/badge.svg?branch=master)](https://github.com/si3nloong/rsql/actions)
+[![Build Status](https://github.com/si3nloong/rsql/workflows/test/badge.svg?branch=master)](https://github.com/si3nloong/rsql/actions)
 
 ### RESTful Query Language (RSQL)
 
