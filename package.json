@@ -1,6 +1,6 @@
 {
   "name": "rsql",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "RSQL query string generator",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,11 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/si3nloong/rsql.git"
+    "url": "git@github.com:si3nloong/rsql.git"
   },
   "files": [
     "lib/**/*"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "bugs": {},
   "author": "SianLoong",
   "keywords": [

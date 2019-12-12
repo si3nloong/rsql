@@ -51,7 +51,7 @@ export default class Query {
       )}`;
     }
 
-    if (this.sort.length > 0) {
+    if (this.sorts.length > 0) {
       querystr += querystr !== '' ? '&' : '';
       querystr += `$sort=${this.sorts.join(',')}`;
     }

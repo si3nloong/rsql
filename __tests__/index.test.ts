@@ -6,9 +6,11 @@ test('Query String', () => {
     ne('flag', true),
     includes('status', ['A', 'B', 'C']),
     notIncludes('status', ['A', 'B', 'C']),
-  ).qs();
+  )
+    .sort('a', 'b', 'c')
+    .qs();
   expect(qs).toBe(
-    `$filter=(name==1;flag!=true;status=in=A,B,C;status=nin=A,B,C)&$limit=100`,
+    `$filter=(name==1;flag!=true;status=in=A,B,C;status=nin=A,B,C)&$sort=a,b,c&$limit=100`,
   );
 
   expect(filter(ne('b', 'value'), or(eq('c', 'v2'), eq('d', 'v4'))).qs()).toBe(
