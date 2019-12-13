@@ -1,6 +1,5 @@
-import { and } from '.';
+import { IArray, IStringer, IBase, Operator } from './types';
 import { Expression } from './expression';
-import { IArray, IStringer } from './types';
 
 export default class Query {
   private projections: string[] = [];
@@ -64,3 +63,47 @@ export default class Query {
     return querystr;
   };
 }
+
+const mapExpr = <T>(optr: Operator) => (field: string, value: T) =>
+  new Expression(field, optr, value);
+
+const groupBy = (seperator: string) => (
+  ...args: Array<Expression | IArray>
+) => {
+  const length = args.length - 1;
+  const result = args.reduce(
+    (acc: IArray, cur: Expression | IArray, i: number) => {
+      if (cur instanceof Expression) {
+        acc.push(cur);
+      } else {
+        acc = acc.concat(cur);
+      }
+      if (i < length) {
+        acc.push(seperator);
+      }
+      return acc;
+    },
+    ['('],
+  );
+  result.push(')');
+  return result;
+};
+
+export const or = groupBy(',');
+export const and = groupBy(';');
+export const eq = mapExpr<IBase>(Operator.Equal);
+export const ne = mapExpr<IBase>(Operator.NotEqual);
+export const gt = mapExpr<IBase>(Operator.GreaterThan);
+export const gte = mapExpr<IBase>(Operator.GreaterEqual);
+export const lt = mapExpr<IBase>(Operator.LesserThan);
+export const lte = mapExpr<IBase>(Operator.LesserEqual);
+export const like = mapExpr<IBase>(Operator.Like);
+export const notLike = mapExpr<IBase>(Operator.NotLike);
+export const includes = mapExpr<IBase[]>(Operator.In);
+export const notIncludes = mapExpr<IBase[]>(Operator.NotIn);
+
+export const select = (...args: string[]) => new Query().select(...args);
+export const filter = (...args: Array<Expression | IArray>) =>
+  new Query().filter(...args);
+export const sort = (...args: string[]) => new Query().sort(...args);
+export const limit = (num: number) => new Query().limit(num);
