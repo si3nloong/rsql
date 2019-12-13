@@ -1,5 +1,5 @@
-import { IArray, IStringer, IBase, Operator } from './types';
 import { Expression } from './expression';
+import { IArray, IBase, IStringer, Operator } from './types';
 
 export default class Query {
   private projections: string[] = [];
