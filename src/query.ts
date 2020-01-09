@@ -32,12 +32,12 @@ export default class Query {
 
     if (this.projections.length > 0) {
       querystr += querystr !== '' ? '&' : '';
-      querystr += `$select=${this.projections.join(',')}`;
+      querystr += `select=${this.projections.join(',')}`;
     }
 
     if (this.conditions.length > 0) {
       querystr += querystr !== '' ? '&' : '';
-      querystr += `$filter=${this.conditions.reduce(
+      querystr += `filter=${this.conditions.reduce(
         (acc: string, cur: IStringer | string) => {
           if (typeof cur === 'string') {
             acc += cur;
@@ -52,12 +52,12 @@ export default class Query {
 
     if (this.sorts.length > 0) {
       querystr += querystr !== '' ? '&' : '';
-      querystr += `$sort=${this.sorts.join(',')}`;
+      querystr += `sort=${this.sorts.join(',')}`;
     }
 
     if (this.max > 0) {
       querystr += querystr !== '' ? '&' : '';
-      querystr += `$limit=${this.max.toFixed(0)}`;
+      querystr += `limit=${this.max.toFixed(0)}`;
     }
 
     return querystr;

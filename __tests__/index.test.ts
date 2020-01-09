@@ -10,10 +10,10 @@ test('Query String', () => {
     .sort('a', 'b', 'c')
     .qs();
   expect(qs).toBe(
-    `$filter=(name==1;flag!=true;status=in=A,B,C;status=nin=A,B,C)&$sort=a,b,c&$limit=100`,
+    `filter=(name==1;flag=ne=true;status=in=A,B,C;status=nin=A,B,C)&sort=a,b,c&limit=100`,
   );
 
   expect(filter(ne('b', 'value'), or(eq('c', 'v2'), eq('d', 'v4'))).qs()).toBe(
-    `$filter=(b!=value;(c==v2,d==v4))&$limit=100`,
+    `filter=(b=ne=value;(c==v2,d==v4))&limit=100`,
   );
 });

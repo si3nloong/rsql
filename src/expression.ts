@@ -18,7 +18,7 @@ export class Expression implements IStringer {
         str += '==';
         break;
       case Operator.NotEqual:
-        str += '!=';
+        str += '=ne=';
         break;
       case Operator.LesserThan:
         str += '<';
