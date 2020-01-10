@@ -1,15 +1,11 @@
 import { IStringer, Operator } from './types';
 
 export class Expression implements IStringer {
-  private field: string;
-  private operator: Operator;
-  private value: any;
-
-  constructor(field: string, op: Operator, value: any) {
-    this.field = field;
-    this.operator = op;
-    this.value = value;
-  }
+  constructor(
+    private field: string,
+    private operator: Operator,
+    private value: any,
+  ) {}
 
   public string = () => {
     let str = this.field;
@@ -41,7 +37,13 @@ export class Expression implements IStringer {
       default:
         throw new Error('unsupported Operator');
     }
-    str += this.value;
+    switch (typeof this.value) {
+      case 'string':
+        str += `'${this.value}'`;
+        break;
+      default:
+        str += this.value;
+    }
     return str;
   };
 }

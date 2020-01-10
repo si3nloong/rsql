@@ -1,4 +1,4 @@
-import { filter, ne, or, eq, includes, notIncludes } from '../src';
+import { filter, ne, or, eq, includes, notIncludes, gte, lte } from '../src';
 
 test('Query String', () => {
   const qs = filter(
@@ -14,6 +14,15 @@ test('Query String', () => {
   );
 
   expect(filter(ne('b', 'value'), or(eq('c', 'v2'), eq('d', 'v4'))).qs()).toBe(
-    `filter=(b=ne=value;(c==v2,d==v4))&limit=100`,
+    `filter=(b=ne='value';(c=='v2',d=='v4'))&limit=100`,
+  );
+
+  const qs1 = filter(
+    gte('submittedAt', '2019-12-22T16:00:00Z'),
+    lte('submittedAt', '2019-12-31T15:59:59Z'),
+    eq('status', 'APPROVED'),
+  ).qs();
+  expect(qs1).toBe(
+    `filter=(submittedAt>='2019-12-22T16:00:00Z';submittedAt<='2019-12-31T15:59:59Z';status=='APPROVED')&limit=100`,
   );
 });
