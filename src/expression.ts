@@ -34,6 +34,12 @@ export class Expression implements IStringer {
       case Operator.NotIn:
         str += '=nin=';
         break;
+      case Operator.Like:
+        str += '=like=';
+        break;
+      case Operator.NotLike:
+        str += '=nlike=';
+        break;
       default:
         throw new Error('unsupported Operator');
     }

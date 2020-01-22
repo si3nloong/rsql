@@ -1,4 +1,14 @@
-import { filter, ne, or, eq, includes, notIncludes, gte, lte } from '../src';
+import {
+  filter,
+  ne,
+  or,
+  eq,
+  includes,
+  notIncludes,
+  gte,
+  lte,
+  like,
+} from '../src';
 
 test('Query String', () => {
   const qs = filter(
@@ -6,11 +16,12 @@ test('Query String', () => {
     ne('flag', true),
     includes('status', ['A', 'B', 'C']),
     notIncludes('status', ['A', 'B', 'C']),
+    like('test', 'xxx%'),
   )
     .sort('a', 'b', 'c')
     .qs();
   expect(qs).toBe(
-    `filter=(name==1;flag=ne=true;status=in=A,B,C;status=nin=A,B,C)&sort=a,b,c&limit=100`,
+    `filter=(name==1;flag=ne=true;status=in=A,B,C;status=nin=A,B,C;test=like='xxx%')&sort=a,b,c&limit=100`,
   );
 
   expect(filter(ne('b', 'value'), or(eq('c', 'v2'), eq('d', 'v4'))).qs()).toBe(
